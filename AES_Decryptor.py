@@ -1,7 +1,8 @@
 def decrypt(keyfile,filename):
     from Crypto.Cipher import AES
-    from Crypto.Util.Padding import unpad
+    from Crypto.Util.Padding import unpad,pad
     import logger
+    import util
 
     with open(keyfile, 'r') as f:
         key = f.read()
@@ -10,12 +11,13 @@ def decrypt(keyfile,filename):
 
     with open(filename, "rb") as f:
         iv = f.read(16)
-        ciphertext = f.read()
-        logger.logit(f"Read Cypher Test {filename}")
+        cyphertext = f.read()
+        logger.logit(f"Read Cypher Text {filename}")
     
     cipher = AES.new(key, AES.MODE_CBC, iv)
-    plaintext = unpad(cipher.decrypt(ciphertext), AES.block_size)
-    
+    cyphertext = util.padmessage(cyphertext.hex())
+    plaintext = unpad(cipher.decrypt(cyphertext.encode()), 16)
+
     with open('RECOVERED_FILES/recovered.txt', 'wb') as f:
         f.write(plaintext)
         logger.logit(f"Wrote to RECOVERED_FILES/rankers.txt")
