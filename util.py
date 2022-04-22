@@ -9,5 +9,5 @@ def keygen(length):
 
 def padmessage(message):
     # padding the message with ' '
-    message = message + ' ' * (16 - len(message) % 16)
+    message = message + (b' ' * (16 - len(message) % 16))
     return message

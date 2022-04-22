@@ -9,15 +9,14 @@ def decrypt(keyfile,filename):
         logger.logit(f"Read {keyfile}")
     key = key.encode() #converting it to bytes
 
-    with open(filename, "rb") as f:
-        iv = f.read(16)
+    with open(filename,'rb') as f:
         cyphertext = f.read()
         logger.logit(f"Read Cypher Text {filename}")
-    
-    cipher = AES.new(key, AES.MODE_CBC, iv)
-    cyphertext = util.padmessage(cyphertext.hex())
-    plaintext = unpad(cipher.decrypt(cyphertext.encode()), 16)
-
-    with open('RECOVERED_FILES/recovered.txt', 'wb') as f:
+    IV = b"This is an IV456"
+    cipher = AES.new(key, AES.MODE_CBC, IV)
+    # cyphertext = util.padmessage(cyphertext)
+    plaintext = cipher.decrypt(cyphertext)
+    plaintext = plaintext.hex()
+    with open('RECOVERED_FILES/recovered.txt', 'w') as f:
         f.write(plaintext)
         logger.logit(f"Wrote to RECOVERED_FILES/rankers.txt")
