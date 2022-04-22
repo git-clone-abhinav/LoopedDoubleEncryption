@@ -1,26 +1,23 @@
-from Crypto.Cipher import AES
-import hashlib
-import util
+def encrypt(filename):
+    from Crypto.Cipher import AES
+    from Crypto.Util.Padding import pad
+    import util
+    import logger
 
+    key = util.keygen(16)
+    with open('AES_FILES/AES_key.key', 'w') as f:
+        f.write(key)
+        logger.logit("Written AES key to file")
+    key = key.encode()
 
-# generating a random key of 1000 letters
-password = util.keygen(1000)
-with open('password.txt', 'w') as f:
-    f.write(password)
-password = password.encode() #converting it to bytes
+    cypher = AES.new(key, AES.MODE_CBC)
 
-# hashing it with SHA256
-key  = hashlib.sha256(password).digest()
-with open('AES_Hashed_key.txt', 'w') as f:
-    f.write(key.hex())
+    with open(filename, "rb") as f:
+        plaintext = f.read()
+        logger.logit(f"Read text form {filename}")
 
-mode = AES.MODE_CBC # Cypher Blockchain Mode
-IV = 'This is an IV465' # Initialisation Vector should be of 16 bytes (a randomised string)
+    cypher_text = cypher.encrypt(pad(plaintext, AES.block_size))
 
-cipher = AES.new(key,mode,IV)
-
-message = util.padmessage('This is a secret message')
-
-encrypted_message = cipher.encrypt(message)
-
-print(encrypted_message)
+    with open('AES_FILES/AES_cypher.cql', 'wb') as f:
+        f.write(cypher_text)
+        logger.logit("Written AES Cypher Text to file")
